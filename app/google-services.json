@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "847533004084",
+    "project_id": "proyectolibros-4a322",
+    "storage_bucket": "proyectolibros-4a322.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:847533004084:android:f04abfeca59c553cce4161",
+        "android_client_info": {
+          "package_name": "com.example.listviewpersonas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "847533004084-5g4669pl45f9koj96f7mbltgihuq9eak.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwP0GsNfs7Sod2HDgASJiJYvr_l6JVFRY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "847533004084-5g4669pl45f9koj96f7mbltgihuq9eak.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
