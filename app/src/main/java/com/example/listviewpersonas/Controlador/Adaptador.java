@@ -15,11 +15,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.listviewpersonas.Modelo.ClaseBD;
 import com.example.listviewpersonas.R;
 import com.example.listviewpersonas.Vista.Add_Libro;
 import com.example.listviewpersonas.Vista.Detalle;
-import com.example.listviewpersonas.Vista.MainActivity;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -28,20 +28,20 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
     private Context context;
     private ArrayList<Libros> lista;
 
-    ClaseBD claseBD;
+    private DatabaseReference mDatabaseReference;
 
-    public Adaptador(Context context, ArrayList<Libros> lista) {
-        this.context = context;
-        this.lista = lista;
-        claseBD = new ClaseBD(context);
+
+    String obtenerId;
+    public Adaptador(Context contexto, ArrayList<Libros> lista) {
+    this.context = contexto;
+    this.lista = lista;
     }
 
     @NonNull
     @Override
     public Adaptador.HolderAlumno onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        //Inflamos el layout con el de lista_alumno
-        View view = LayoutInflater.from(context).inflate(R.layout.lista, parent, false);
 
+        View view = LayoutInflater.from(context).inflate(R.layout.lista, parent, false);
         //Devolvemos el HolderAlumno con todas las vistas de lista_alumno inicializadas, es donde pondremos los datos de los alumnos
         return new HolderAlumno(view);
     }
@@ -53,17 +53,16 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
         //Primero obtenemos los datos de cada alumno por la posición
         Libros libro = lista.get(position);
         final String id = libro.getId();
-
+        obtenerId = id;
         final String titulo = libro.getTitulo();
-        final String autor = libro.getAutor();
+        final String auto = libro.getAutor();
         final String imagen = libro.getFoto();
         final String resumen = libro.getResumen();
         final String comentario = libro.getComentario();
 
-
         //Estos datos los mostramos en las vistas correspondientes de lista_alumno que están recogidas en el holder
-        holder.título.setText(titulo);
-        holder.autor.setText(autor);
+        holder.título.setText(libro.getTitulo());
+        holder.autor.setText(libro.getAutor());
 
 
         //para la imagen, si el usuario no quiere asignar imagen, la uri será nula por lo que configuramos una imagen predeterminada para este caso
@@ -74,13 +73,12 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
             holder.imagen.setImageURI(Uri.parse(imagen));
         }
 
-        //Si clickamos en un holder (en un item de la lista) nos llevará a la pantalla con los detalles del alumno
+       //Si clickamos en un holder (en un item de la lista) nos llevará a la pantalla con los detalles del alumno
         //Además, tendremos que pasarle el id de dicho alumno
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, Detalle.class);
-                //Toast.makeText(contexto, nombre + " " + id, Toast.LENGTH_SHORT).show();
                 intent.putExtra("id", id);
                 context.startActivity(intent);
             }
@@ -90,7 +88,7 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
         holder.btn_mas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mostrarOpcionesDialogo(""+position, imagen, id, titulo, autor, resumen, comentario);
+                mostrarOpcionesDialogo(""+position, imagen, id, titulo, auto, resumen, comentario);
             }
         });
 
@@ -98,6 +96,8 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
 
     //Hacemos un método para mostrar el diálogo del botón de editar y borrar
     public void mostrarOpcionesDialogo(final String posicion, final String imagen, final String id, final String titulo, final String autor, final String resumen, final String comentario){
+
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         //Creamos un array de Strings con las opciones que van a aparecer en el diálogo
 
         String[] opciones = {"Editar", "Eliminar"};
@@ -134,10 +134,8 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
                     eliminarDialogo.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //en este caso borramos al alumno que queremos
-                            claseBD.eliminarPersonaById(id);
-                            //y actualizamos la lista de alumnos otra vez llamando al método onResume del MainActivity
-                            ((MainActivity)context).onResume();
+                            eliminar(id);
+
                         }
                     });
                     eliminarDialogo.setNegativeButton("No", null);
@@ -152,13 +150,19 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
 
     }
 
+    private void eliminar(String id){
+       if(id.equals(obtenerId)){
+            mDatabaseReference.child("posts").child(obtenerId).removeValue();
+       }
+    }
+
     @Override
     public int getItemCount() {
-        //Devuelve el número de alumnos almacenados
+
         return lista.size();
     }
 
-    public class HolderAlumno extends RecyclerView.ViewHolder{
+    public static class HolderAlumno extends RecyclerView.ViewHolder{
         //En esta clase cogemos todos los elementos de lista_alumnos para poder utilizarlos en AdapterAlumno y rellenar el recyclerview posteriormente
         ImageView imagen;
         TextView título, autor;

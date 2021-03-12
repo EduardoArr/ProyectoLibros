@@ -8,7 +8,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.listviewpersonas.Controlador.Libros;
-import com.example.listviewpersonas.Modelo.ClaseBD;
 import com.example.listviewpersonas.R;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -16,7 +15,6 @@ public class SettingsActivity extends AppCompatActivity {
     EditText edt1;
     Button guardar;
 
-    ClaseBD claseBD;
     Libros libros;
     ActionBar actionBar;
 

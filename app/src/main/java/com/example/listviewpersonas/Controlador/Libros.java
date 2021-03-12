@@ -10,12 +10,24 @@ public class Libros implements Serializable {
     private String resumen;
     private String comentario;
 
+
     public Libros(String id,  String titulo, String autor, String resumen, String comentario) {
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
         this.resumen = resumen;
         this.comentario = comentario;
+    }
+
+    public Libros(String titulo, String autor, String resumen, String comentario) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.resumen = resumen;
+        this.comentario = comentario;
+    }
+
+    public Libros(){
+
     }
 
 

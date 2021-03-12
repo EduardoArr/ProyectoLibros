@@ -23,11 +23,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.listviewpersonas.Modelo.ClaseBD;
+import com.example.listviewpersonas.Controlador.Libros;
 import com.example.listviewpersonas.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Add_Libro extends AppCompatActivity {
 
@@ -39,6 +47,8 @@ public class Add_Libro extends AppCompatActivity {
     FloatingActionButton aceptar;
 
     ActionBar actionBar;
+
+    private DatabaseReference mDatabaseReference;
 
     private static final int REQUEST_CAMERA_CODE = 1;
     private static final int REQUEST_STORAGE_CODE = 2;
@@ -53,8 +63,9 @@ public class Add_Libro extends AppCompatActivity {
 
     Uri uri;
     String txt_titulo, txt_autor, txt_resumen, txt_comentario, txt_imagen, txt_id;
+    int cont = 0;
 
-    ClaseBD claseBD;
+
 
     boolean editar;
 
@@ -71,12 +82,19 @@ public class Add_Libro extends AppCompatActivity {
         comentario = findViewById(R.id.comentario);
         aceptar = findViewById(R.id.save);
 
+         final Libros libro = new Libros();
+
+
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+
+
         actionBar = getSupportActionBar();
         actionBar.setTitle("Agregar Libro");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
 
-        claseBD = new ClaseBD(this);
+
         cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
@@ -89,6 +107,8 @@ public class Add_Libro extends AppCompatActivity {
             actionBar.setTitle("Editar Registro");
 
             //si viene de editar cojo los datos de ese alumno
+            txt_id = bundle.getString("id");
+            Log.e("pruebaID", "" + txt_id);
             txt_titulo = bundle.getString("titulo");
             txt_autor = bundle.getString("autor");
             txt_resumen = bundle.getString("resumen");
@@ -115,6 +135,7 @@ public class Add_Libro extends AppCompatActivity {
             actionBar.setTitle("Agregar Registro");
         }
 
+
         portada.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,18 +152,50 @@ public class Add_Libro extends AppCompatActivity {
     }
 
     private void guardarLibro(){
+
         txt_titulo = título.getText().toString().trim();
         txt_autor = autor.getText().toString().trim();
         txt_resumen = resumen.getText().toString().trim();
         txt_comentario = comentario.getText().toString().trim();
 
-        String timestamp = "" + System.currentTimeMillis();
-        long id;
         if(!editar) {
-            id = claseBD.insertarLibros(txt_titulo, txt_autor, txt_resumen, txt_comentario);
+            Map<String, Object> postref = new HashMap<>();
+            postref.put("titulo", txt_titulo);
+            postref.put("autor", txt_autor);
+            postref.put("resumen", txt_resumen);
+            postref.put("comentario", txt_comentario);
+            mDatabaseReference.child("posts").push().setValue(postref);
+
         }else{
-            claseBD.actualizarLibros(txt_id, txt_titulo, txt_autor, txt_resumen, txt_comentario);
+
+            mDatabaseReference.child("posts").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    for (DataSnapshot snap : snapshot.getChildren()) {
+                        String ID = snap.getKey();
+
+                        if(txt_id.equals(ID)){
+                            mDatabaseReference.child("posts").child(txt_id).child("autor").setValue(txt_autor);
+                            mDatabaseReference.child("posts").child(txt_id).child("comentario").setValue(txt_comentario);
+                            mDatabaseReference.child("posts").child(txt_id).child("resumen").setValue(txt_resumen);
+                            mDatabaseReference.child("posts").child(txt_id).child("titulo").setValue(txt_titulo);
+
+                        }
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+
+            });
+
         }
+
+
     }
 
     private void mostrarOpcionesImagen() {

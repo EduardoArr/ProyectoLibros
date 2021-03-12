@@ -1,64 +1,111 @@
 package com.example.listviewpersonas.Vista;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.example.listviewpersonas.Controlador.Adaptador;
-import com.example.listviewpersonas.Modelo.ClaseBD;
-import com.example.listviewpersonas.Modelo.ConstantesBD;
+import com.example.listviewpersonas.Controlador.Libros;
 import com.example.listviewpersonas.R;
+import com.example.listviewpersonas.Registro.HomeActivity;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
-    RecyclerView libro;
+    RecyclerView rv;
 
     ActionBar actionBar;
 
-    String ordenarPorNombreAsc = ConstantesBD.C_TITULO + "ASC";
-    String ordenarPorNombreDesc = ConstantesBD.C_TITULO + "DESC";
-    String ordenarPorNuevo = ConstantesBD.C_ADDEDTIME + "Desc";
+    private ArrayList<Libros> libros = new ArrayList<>();
+    private Adaptador adapter;
+    private DatabaseReference mDatabase;
 
-    String condicionOrdenarActual = ordenarPorNuevo;
-    ClaseBD claseBD;
+
+    String usuarios;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-       /* try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        setTheme(R.style.AppTheme);*/
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        libro = findViewById(R.id.listView);
-        claseBD = new ClaseBD(this);
+
+        rv = findViewById(R.id.listView);
         actionBar = getSupportActionBar();
         actionBar.setTitle("LIBROS");
 
-        mostrarLibros(condicionOrdenarActual);
+
+        Bundle extras = getIntent().getExtras();
+        usuarios = extras.getString("email");
+        Log.e("email", "" + usuarios);
+
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mostrarLibros();
+
+        Log.e("mensaje", "fuunc");
 
     }
 
-    private void mostrarLibros(String condicionOrdenar){
-        condicionOrdenarActual = condicionOrdenar;
-        Adaptador adapter = new Adaptador(this, claseBD.mostrarLibros(condicionOrdenar));
-        libro.setAdapter(adapter);
+    private void mostrarLibros() {
+
+        mDatabase.child("posts").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                libros.clear();
+
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    Libros lib = snap.getValue(Libros.class);
+
+                    String id = snap.getKey();
+                    String titulo = lib.getTitulo();
+                    String autor = lib.getAutor();
+                    String resumen = lib.getResumen();
+                    String comentario = lib.getComentario();
+
+
+                    Log.e("Titulo", "" + titulo);
+                    Log.e("id", "" + id);
+                    Log.e("autor", "" + autor);
+                    Log.e("resumen", "" + resumen);
+                    Log.e("comentario", "" + comentario);
+                    Log.e("Datos", "" + snapshot.getValue());
+
+                    lib = new Libros(id, titulo, autor, resumen, comentario);
+                    libros.add(lib);
+
+                }
+                adapter = new Adaptador(MainActivity.this, libros);
+                rv.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+
+        });
     }
 
-    public void onResume(){
-        super.onResume();
-        mostrarLibros(condicionOrdenarActual);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,15 +123,25 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.crear) {
-            lanzarPreferencias(null);
+            añadir(null);
+            return true;
+        }
+        if(id == R.id.perfil){
+            perfil(null);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void lanzarPreferencias(View view) {
+    public void añadir(View view) {
         Intent intent = new Intent(MainActivity.this, Add_Libro.class);
         intent.putExtra("REQUEST_EDICION", false);
+        startActivity(intent);
+    }
+
+    public void perfil(View view){
+        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+        intent.putExtra("correo", usuarios);
         startActivity(intent);
     }
 

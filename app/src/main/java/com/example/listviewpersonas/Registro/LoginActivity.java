@@ -24,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText email;
     EditText password;
     Button login;
+    Button registrar;
     private FirebaseAuth mAuth;
 
     String txt_email, txt_pass;
@@ -44,11 +45,13 @@ public class LoginActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
 
+        registrar = findViewById(R.id.btn_cerrarSesion);
         login = findViewById(R.id.login);
 
        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!email.getText().toString().isEmpty() && !password.getText().toString().isEmpty()) {
                     FirebaseAuth.getInstance().signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                             .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -60,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                                         updateUI(user);
                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                         intent.putExtra("email", task.getResult().getUser().getEmail());
+                                        Log.e("email", "" + task.getResult().getUser().getEmail());
                                         startActivity(intent);
                                     } else {
                                         // If sign in fails, display a message to the user.
@@ -70,8 +74,19 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 }
                             });
+                }else{
+                    Toast.makeText(LoginActivity.this, "Añade algo", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
+       registrar.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Intent intent = new Intent(LoginActivity.this, RegistroActivity.class);
+               startActivity(intent);
+           }
+       });
     }
 
 

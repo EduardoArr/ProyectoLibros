@@ -44,7 +44,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/registrar"
+                android:id="@+id/btn_cerrarSesion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
