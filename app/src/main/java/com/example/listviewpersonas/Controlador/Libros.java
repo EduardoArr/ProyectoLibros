@@ -19,13 +19,6 @@ public class Libros implements Serializable {
         this.comentario = comentario;
     }
 
-    public Libros(String titulo, String autor, String resumen, String comentario) {
-        this.titulo = titulo;
-        this.autor = autor;
-        this.resumen = resumen;
-        this.comentario = comentario;
-    }
-
     public Libros(){
 
     }

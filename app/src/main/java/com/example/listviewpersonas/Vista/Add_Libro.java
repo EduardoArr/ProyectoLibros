@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -21,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.listviewpersonas.Controlador.Libros;
@@ -40,6 +42,7 @@ import java.util.Map;
 public class Add_Libro extends AppCompatActivity {
 
     ImageView portada;
+    TextView tituEdit;
     EditText título;
     EditText autor;
     EditText resumen;
@@ -63,11 +66,11 @@ public class Add_Libro extends AppCompatActivity {
 
     Uri uri;
     String txt_titulo, txt_autor, txt_resumen, txt_comentario, txt_imagen, txt_id;
-    int cont = 0;
 
 
 
     boolean editar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +78,14 @@ public class Add_Libro extends AppCompatActivity {
         setContentView(R.layout.activity_add__libro);
 
 
+        tituEdit = findViewById(R.id.titEdit);
         portada = findViewById(R.id.btn_add_photo);
         título = findViewById(R.id.título);
         autor = findViewById(R.id.autor);
-        resumen = findViewById(R.id.resumen);
+        resumen = findViewById(R.id.comment);
         comentario = findViewById(R.id.comentario);
         aceptar = findViewById(R.id.save);
 
-         final Libros libro = new Libros();
 
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -106,7 +109,7 @@ public class Add_Libro extends AppCompatActivity {
             //cambiamos el título del ActionBar
             actionBar.setTitle("Editar Registro");
 
-            //si viene de editar cojo los datos de ese alumno
+            //si viene de editar cojo los datos del libro
             txt_id = bundle.getString("id");
             Log.e("pruebaID", "" + txt_id);
             txt_titulo = bundle.getString("titulo");
@@ -117,6 +120,7 @@ public class Add_Libro extends AppCompatActivity {
             txt_imagen = bundle.getString("imagen");
 
             //y los muestro
+            tituEdit.setText("EDITA UN LIBRO");
             título.setText(txt_titulo);
             autor.setText(txt_autor);
             resumen.setText(txt_resumen);
@@ -125,7 +129,7 @@ public class Add_Libro extends AppCompatActivity {
 
             if (txt_imagen == null) {
                 portada.setImageResource(R.drawable.ic_baseline_add_a_photo_24);
-                //Cuando pinchamos en agregar imagen de alumno
+                //Cuando pinchamos en agregar imagen de libro
 
             } else {
                 portada.setImageURI(uri);
@@ -153,11 +157,13 @@ public class Add_Libro extends AppCompatActivity {
 
     private void guardarLibro(){
 
+        //Recogemos los datos de los EditText y los pasamos a String.
         txt_titulo = título.getText().toString().trim();
         txt_autor = autor.getText().toString().trim();
         txt_resumen = resumen.getText().toString().trim();
         txt_comentario = comentario.getText().toString().trim();
 
+        //Si es distinto de editar creará el nuevo libro con los datos que hemos escrito.
         if(!editar) {
             Map<String, Object> postref = new HashMap<>();
             postref.put("titulo", txt_titulo);
@@ -168,30 +174,11 @@ public class Add_Libro extends AppCompatActivity {
 
         }else{
 
-            mDatabaseReference.child("posts").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        String ID = snap.getKey();
-
-                        if(txt_id.equals(ID)){
-                            mDatabaseReference.child("posts").child(txt_id).child("autor").setValue(txt_autor);
-                            mDatabaseReference.child("posts").child(txt_id).child("comentario").setValue(txt_comentario);
-                            mDatabaseReference.child("posts").child(txt_id).child("resumen").setValue(txt_resumen);
-                            mDatabaseReference.child("posts").child(txt_id).child("titulo").setValue(txt_titulo);
-
-                        }
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-
-            });
+            //Si ha entrado en la opción de editar modificaremos los datos de la base de datos con los nuevos que escriba, para ello tenemos que pasarle una id y el campo que queremos cambiar.
+            mDatabaseReference.child("posts").child(txt_id).child("autor").setValue(txt_autor);
+            mDatabaseReference.child("posts").child(txt_id).child("comentario").setValue(txt_comentario);
+            mDatabaseReference.child("posts").child(txt_id).child("resumen").setValue(txt_resumen);
+            mDatabaseReference.child("posts").child(txt_id).child("titulo").setValue(txt_titulo);
 
         }
 

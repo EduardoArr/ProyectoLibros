@@ -29,11 +29,17 @@ public class RegistroActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro);
+
+        //Instanciamos FirebaseAuth para el registro de usuarios
         mAuth = FirebaseAuth.getInstance();
 
-        registrar = findViewById(R.id.btn_cerrarSesion);
+        registrar = findViewById(R.id.registro);
         email = findViewById(R.id.emailRegistro);
         contraseña = findViewById(R.id.passwordRegistro);
+
+        /*
+        Con el siguiente método recogemos los datos que se han escrito en el EditText de contraseña y de email y firebase se encarga de guardarlos como un nuevo usuario.
+         */
 
         registrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +53,8 @@ public class RegistroActivity extends AppCompatActivity {
                                     Log.d("TAG", "createUserWithEmail:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     updateUI(user);
+                                    onBackPressed();
+
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w("tag", "createUserWithEmail:failure", task.getException());
@@ -56,6 +64,7 @@ public class RegistroActivity extends AppCompatActivity {
 
                             }
                         });
+
             }
         });
 
@@ -65,14 +74,6 @@ public class RegistroActivity extends AppCompatActivity {
 
 
          public void updateUI(FirebaseUser account) {
-
-                if (account != null) {
-                    Toast.makeText(this, "U Signed In successfully", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(this, MainActivity.class));
-
-                } else {
-                    Toast.makeText(this, "U Didnt signed in", Toast.LENGTH_LONG).show();
-                }
 
             }
         }

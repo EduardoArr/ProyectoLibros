@@ -36,11 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     String usuarios;
-
-
-
-
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -52,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         actionBar.setTitle("LIBROS");
 
-
+        //Recogemos el email
         Bundle extras = getIntent().getExtras();
         usuarios = extras.getString("email");
         Log.e("email", "" + usuarios);
@@ -66,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mostrarLibros() {
-
+        //Recorremos los datos de la base de datos, y los metemos dentro del contructor de la clase libros, y luego lo añadimos a un ArrayList, así puede usar los datos el adaptador.
         mDatabase.child("posts").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -94,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     libros.add(lib);
 
                 }
+                //seteamos el adaptador para mostrar los libros.s
                 adapter = new Adaptador(MainActivity.this, libros);
                 rv.setAdapter(adapter);
             }
@@ -139,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //Con este metodo cambiamos de ventana a la de el perfil de usuario y le pasamos el usuario para luego mostrarlo en la otra clase
     public void perfil(View view){
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
         intent.putExtra("correo", usuarios);

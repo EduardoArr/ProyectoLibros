@@ -32,9 +32,9 @@ public class Detalle extends AppCompatActivity {
     ActionBar actionBar;
 
 
-    Libros libros;
 
-    String id, tit, au, res, come, por;
+
+    String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +49,7 @@ public class Detalle extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        //Recogemos la id que le hemos pasado en el adapter para saber que elemento hemos seleccionado.
         Bundle extras = getIntent().getExtras();
         id = extras.getString("id");
         Log.e("hol", "" + id);
@@ -58,7 +59,7 @@ public class Detalle extends AppCompatActivity {
         portada = (ImageView) findViewById(R.id.Portada);
         titulo = (TextView) findViewById(R.id.titulo);
         autor = (TextView) findViewById(R.id.autor);
-        resumen = (TextView) findViewById(R.id.resumen);
+        resumen = (TextView) findViewById(R.id.comment);
         comentario = (TextView) findViewById(R.id.comentario);
 
         mostrarDetalle(id);
@@ -66,7 +67,7 @@ public class Detalle extends AppCompatActivity {
     }
 
     public void mostrarDetalle(final String id){
-
+        //Recorremos las tablas de la base de datos, y si la id que le pasamos al método coincide con la id del libro que hemos seleccionado, nos muestra sus datos.
         mDatabase.child("posts").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -125,6 +126,7 @@ public class Detalle extends AppCompatActivity {
 
     public void lanzarPreferencias(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
+        intent.putExtra("ID", id);
         startActivity(intent);
     }
     public boolean onSupportNavigateUp(){

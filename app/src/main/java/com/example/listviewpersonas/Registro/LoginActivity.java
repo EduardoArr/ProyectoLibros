@@ -45,9 +45,12 @@ public class LoginActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
 
-        registrar = findViewById(R.id.btn_cerrarSesion);
+        registrar = findViewById(R.id.registro);
         login = findViewById(R.id.login);
 
+        /*
+            Con este método recogemos los datos que hay en firebase y si coinciden con los escritos en los EditText podras logearte y entrar en la aplicación
+         */
        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

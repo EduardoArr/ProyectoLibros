@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.listviewpersonas.R;
-import com.example.listviewpersonas.Vista.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
@@ -39,7 +38,7 @@ public class HomeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         correo = findViewById(R.id.correo);
         imagen = findViewById(R.id.imageView3);
-        cerrarSesion = findViewById(R.id.btn_cerrarSesion);
+        cerrarSesion = findViewById(R.id.registro);
         pers = findViewById(R.id.img_perfil);
 
         Bundle extras = getIntent().getExtras();
@@ -55,6 +54,9 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    /*
+    Este método es para que cuando pulsemos el botón de cerrar sesión, nos regrese a la pantalla de inicio de sesión con la sesión cerrada.
+     */
     private void cerrarSesion(){
         cerrarSesion.setOnClickListener(new View.OnClickListener() {
             @Override

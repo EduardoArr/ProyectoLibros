@@ -23,7 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
-public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
+public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderLibros> {
 
     private Context context;
     private ArrayList<Libros> lista;
@@ -39,18 +39,18 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
 
     @NonNull
     @Override
-    public Adaptador.HolderAlumno onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public Adaptador.HolderLibros onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(context).inflate(R.layout.lista, parent, false);
-        //Devolvemos el HolderAlumno con todas las vistas de lista_alumno inicializadas, es donde pondremos los datos de los alumnos
-        return new HolderAlumno(view);
+        //Devolvemos el HolderLibros con todas las vistas de la lista inicializadas, es donde pondremos los datos de los libros
+        return new HolderLibros(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HolderAlumno holder, final int position) {
+    public void onBindViewHolder(@NonNull HolderLibros holder, final int position) {
         //Con este método obtenemos datos, los establecemos y vemos los clicks
 
-        //Primero obtenemos los datos de cada alumno por la posición
+        //Primero obtenemos los datos de cada libro por la posición
         Libros libro = lista.get(position);
         final String id = libro.getId();
         obtenerId = id;
@@ -60,21 +60,20 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
         final String resumen = libro.getResumen();
         final String comentario = libro.getComentario();
 
-        //Estos datos los mostramos en las vistas correspondientes de lista_alumno que están recogidas en el holder
+        //Estos datos los mostramos en las vistas correspondientes de lista que están recogidas en el holder
         holder.título.setText(libro.getTitulo());
         holder.autor.setText(libro.getAutor());
 
 
         //para la imagen, si el usuario no quiere asignar imagen, la uri será nula por lo que configuramos una imagen predeterminada para este caso
         if(imagen == null){
-            //Toast.makeText(contexto, nombre + " " + imagen, Toast.LENGTH_SHORT).show();
             holder.imagen.setImageResource(R.drawable.ic_baseline_add_a_photo_24);
         }else{
             holder.imagen.setImageURI(Uri.parse(imagen));
         }
 
-       //Si clickamos en un holder (en un item de la lista) nos llevará a la pantalla con los detalles del alumno
-        //Además, tendremos que pasarle el id de dicho alumno
+       //Si clickamos en un holder (en un item de la lista) nos llevará a la pantalla con los detalles del libro
+        //Además, tendremos que pasarle el id de dicho libro
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,8 +109,8 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
             public void onClick(DialogInterface dialog, int which) {
                 //El which a 0 indica la primera opción que es Editar
                 if(which == 0){
-                    //Si clickamos en Editar vamos a la Actividad de AddAlumnoActivity para poder editar los datos
-                    //le tenemos que mandar todos los datos que tiene ese alumno para que los muestre
+                    //Si clickamos en Editar vamos a la Actividad de Add_Libro para poder editar los datos
+                    //le tenemos que mandar todos los datos que tiene ese libro para que los muestre
                     Intent intent = new Intent(context, Add_Libro.class);
                     intent.putExtra("id", id);
                     intent.putExtra("titulo", titulo);
@@ -162,13 +161,13 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.HolderAlumno> {
         return lista.size();
     }
 
-    public static class HolderAlumno extends RecyclerView.ViewHolder{
-        //En esta clase cogemos todos los elementos de lista_alumnos para poder utilizarlos en AdapterAlumno y rellenar el recyclerview posteriormente
+    public static class HolderLibros extends RecyclerView.ViewHolder{
+        //En esta clase cogemos todos los elementos de lista para poder utilizarlos en AdapterLibros y rellenar el recyclerview posteriormente
         ImageView imagen;
         TextView título, autor;
         ImageButton btn_mas;
 
-        public HolderAlumno(@NonNull View itemView) {
+        public HolderLibros(@NonNull View itemView) {
             super(itemView);
 
             //Inicializamos los elementos de la vista
